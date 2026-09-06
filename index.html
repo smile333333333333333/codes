@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>WebWorld 2004</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#c7d7e8;color:#222;font-family:Arial,Helvetica,sans-serif;font-size:14px}
+button,input{font:inherit}
+button{cursor:pointer}
+#desktop{min-height:100vh;background:linear-gradient(#70a5d8,#dbeaff 125px,#c6d8e8 125px)}
+#top{height:55px;background:#163b70;color:white;border-bottom:4px solid #f4c83f;display:flex;align-items:center;padding:0 12px;gap:9px}
+#top b{font-size:20px;white-space:nowrap}
+#address{flex:1;background:white;color:#555;border:2px inset #aaa;height:28px;padding:5px 8px}
+#browser{width:min(1100px,96vw);margin:18px auto;background:#eee;border:3px ridge #ddd;box-shadow:5px 6px 0 #71859a}
+#tabs{height:32px;background:#d2d2d2;padding:5px 8px;border-bottom:1px solid #888}
+.tab{display:inline-block;background:#eee;border:1px solid #888;padding:4px 13px}
+#online{float:right;color:#087b18;font-size:12px;padding:5px}
+#page{min-height:650px;background:white}
+.siteHead{padding:13px 17px;border-bottom:4px solid #333}
+.siteHead h1{margin:0;font-size:31px}
+.siteHead small{font-size:11px}
+.siteBody{padding:16px}
+a{color:#00e;text-decoration:underline;cursor:pointer}
+a:visited{color:#551a8b}
+.center{text-align:center}
+.marquee{background:#ffef00;color:#e00000;border:2px solid #990000;padding:6px;font-weight:bold}
+.box{border:2px outset #ddd;background:#f7f7f7;padding:10px;margin:10px 0}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.card{border:2px solid #777;padding:10px;background:white}
+.bigButton{padding:13px 22px;background:#ffcc00;border:3px outset white;font-weight:bold}
+.notice{background:#ffffcc;border:1px dashed #996600;padding:10px}
+.siteNav{background:#003399;color:white;padding:8px}
+.siteNav a{color:white;margin-right:13px}
+.searchRow{display:flex;gap:6px;margin:12px 0}
+.searchRow input{flex:1;padding:8px;border:2px inset #aaa}
+.post{background:#eef;border:1px solid #99a;padding:8px;margin:8px 0}
+.user{font-weight:bold;color:#000080}
+.small{font-size:11px}
+.red{color:#a00000}
+.green{color:#087c18}
+#openEye{background:#080808;color:#ddd;min-height:650px;font-family:Georgia,serif}
+#openEye .cultHead{background:#111;color:#ddd;text-align:center;padding:25px;border-bottom:1px solid #777}
+.eye{font-size:58px}
+#openEye .cultNav{background:#202020;padding:10px;text-align:center}
+#openEye .cultNav a{color:#ddd;margin:0 12px}
+#openEye .cultBody{max-width:850px;margin:auto;padding:25px;line-height:1.7}
+.join{border:1px solid #777;background:#161616;padding:18px;text-align:center}
+#openEye input{background:#050505;color:#ddd;border:1px solid #777;padding:7px}
+#openEye button{padding:7px 13px}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:center;justify-content:center;z-index:20}
+#modalBox{width:min(650px,90vw);background:#eee;border:4px ridge #ddd;box-shadow:8px 8px #111}
+#modalTitle{background:#173c72;color:white;padding:8px;font-weight:bold}
+#modalTitle button{float:right}
+#modalContent{padding:18px;max-height:70vh;overflow:auto}
+#startOverlay{position:fixed;inset:0;background:#19487c;display:flex;align-items:center;justify-content:center;z-index:50}
+#welcome{width:min(650px,90vw);background:#eee;border:6px ridge #ddd;padding:30px;text-align:center;box-shadow:12px 12px #08284b}
+#welcome h1{font-size:40px;color:#003399;margin:5px}
+#welcome p{line-height:1.6}
+#desktopIcon{position:fixed;left:15px;bottom:15px;text-align:center;color:white;text-shadow:1px 1px #000;font-size:12px}
+#desktopIcon div{font-size:35px}
+@media(max-width:700px){
+.grid{grid-template-columns:1fr}
+.siteHead h1{font-size:24px}
+#browser{margin:5px auto}
+#top b{font-size:16px}
+}
+</style>
+</head>
+
+<body>
+
+<div id="startOverlay">
+<div id="welcome">
+<h1>WebWorld 2004</h1>
+<p><b>Welcome to the Internet.</b></p>
+<p>
+It's colorful.<br>
+It's weird.<br>
+Most of it is completely pointless.
+</p>
+<p>
+Somewhere inside it, however, there is a community
+you probably shouldn't join.
+</p>
+<button class="bigButton" id="enterWeb">ENTER THE INTERNET</button>
+</div>
+</div>
+
+<div id="desktop">
+
+<div id="top">
+<b>🌐 WebWorld</b>
+<div id="address">http://searchly.net/</div>
+<button id="back">←</button>
+<button id="forward">→</button>
+<button id="home">HOME</button>
+</div>
+
+<div id="browser">
+<div id="tabs">
+<span class="tab">WebWorld Explorer</span>
+<span id="online">● ONLINE</span>
+</div>
+<div id="page"></div>
+</div>
+
+<div id="desktopIcon">
+<div>🗑️</div>
+Recycle Bin
+</div>
+
+</div>
+
+<div id="modal">
+<div id="modalBox">
+<div id="modalTitle">
+<button id="closeModal">X</button>
+<span id="modalTitleText">Message</span>
+</div>
+<div id="modalContent"></div>
+</div>
+</div>
+
+<script>
+
+const page=document.getElementById("page");
+const address=document.getElementById("address");
+
+const historyStack=[];
+let historyPos=-1;
+
+let player={
+name:"Guest",
+joined:false,
+trust:0,
+investigation:0,
+belief:0,
+steps:0
+};
+
+let mail=[];
+let searches=[];
+let discovered=[];
+
+const sites={
+
+searchly:{
+title:"Searchly",
+url:"http://searchly.net/"
+},
+
+picshare:{
+title:"PicShare",
+url:"http://picshare.net/"
+},
+
+tubebox:{
+title:"TubeBox",
+url:"http://tubebox.net/"
+},
+
+gamehub:{
+title:"GameHub 2004",
+url:"http://gamehub.net/"
+},
+
+weather:{
+title:"WeatherWorld",
+url:"http://weatherworld.net/"
+},
+
+buybuy:{
+title:"BuyBuy",
+url:"http://buybuy.net/"
+},
+
+food:{
+title:"FoodFinder",
+url:"http://foodfinder.net/"
+},
+
+news:{
+title:"WorldNews",
+url:"http://worldnews.net/"
+},
+
+forum:{
+title:"ForumZone",
+url:"http://forumzone.net/"
+},
+
+cultwatch:{
+title:"CultWatch",
+url:"http://cultwatch.net/"
+},
+
+archive:{
+title:"The Cult Archive",
+url:"http://cultarchive.net/"
+},
+
+exmembers:{
+title:"ExMembers",
+url:"http://exmembers.net/"
+},
+
+cultnews:{
+title:"CultNews",
+url:"http://cultnews.net/"
+},
+
+garden:{
+title:"GardenTalk",
+url:"http://gardentalk.net/"
+},
+
+openeye:{
+title:"The Open Eye",
+url:"http://theopeneye.net/"
+}
+
+};
+
+function esc(text){
+return String(text).replace(/[&<>"']/g,function(m){
+return {
+"&":"&amp;",
+"<":"&lt;",
+">":"&gt;",
+'"':"&quot;",
+"'":"&#039;"
+}[m];
+});
+}
+
+function setAddress(url){
+address.textContent=url;
+}
+
+function link(site,text){
+return '<a data-site="'+site+'">'+text+'</a>';
+}
+
+function go(site,push=true){
+
+if(push){
+
+historyStack.splice(historyPos+1);
+
+historyStack.push(site);
+
+historyPos++;
+}
+
+setAddress(
+sites[site] ?
+sites[site].url :
+site
+);
+
+if(routes[site]){
+routes[site]();
+}else{
+show404(site);
+}
+
+saveGame();
+}
+
+document.addEventListener("click",function(e){
+
+const a=e.target.closest("[data-site]");
+
+if(a){
+
+e.preventDefault();
+
+go(a.dataset.site);
+
+}
+
+});
+
+document.getElementById("back").onclick=function(){
+
+if(historyPos>0){
+
+historyPos--;
+
+go(historyStack[historyPos],false);
+
+}
+
+};
+
+document.getElementById("forward").onclick=function(){
+
+if(historyPos<historyStack.length-1){
+
+historyPos++;
+
+go(historyStack[historyPos],false);
+
+}
+
+};
+
+document.getElementById("home").onclick=function(){
+
+go("searchly");
+
+};
+
+document.getElementById("enterWeb").onclick=function(){
+
+document.getElementById("startOverlay").style.display="none";
+
+go("searchly");
+
+};
+
+function layout(title,body,extra=""){
+
+page.innerHTML=
+'<div class="siteHead '+extra+'">'+
+'<h1>'+title+'</h1>'+
+'<small>WebWorld Internet Service • 2004</small>'+
+'</div>'+
+'<div class="siteBody">'+body+'</div>';
+
+}
+
+function show404(site){
+
+layout(
+"404 - Page Not Found",
+'<div class="center">'+
+'<h2>Oops!</h2>'+
+'<p>The page <b>'+esc(site)+'</b> could not be found.</p>'+
+'<p>Maybe the link is broken.</p>'+
+link("searchly","Return to Searchly")+
+'</div>'
+);
+
+}
+
+const routes={};
+
+/* SEARCH ENGINE */
+
+routes.searchly=function(){
+
+layout(
+"Searchly",
+'<div class="center">'+
+
+'<div style="font-size:52px;color:#1144aa;font-weight:bold">'+
+'Searchly!'
++'</div>'+
+
+'<p>Search the whole web*.</p>'+
+
+'<div class="searchRow">'+
+'<input id="search" placeholder="What are you looking for?">'+
+'<button id="searchBtn">Search</button>'+
+'</div>'+
+
+'<div class="notice">'+
+'⭐ <b>Tip:</b> Try searching for something strange. '+
+'The internet is a big place!'+
+'</div>'+
+
+'<hr>'+
+
+'<h3>Popular Sites</h3>'+
+
+'<div class="grid">'+
+
+'<div class="card">'+
+'<h3>'+link("picshare","PicShare")+'</h3>'+
+'<p>Share your favorite pictures!</p>'+
+'</div>'+
+
+'<div class="card">'+
+'<h3>'+link("tubebox","TubeBox")+'</h3>'+
+'<p>Videos, funny clips and more!</p>'+
+'</div>'+
+
+'<div class="card">'+
+'<h3>'+link("gamehub","GameHub")+'</h3>'+
+'<p>Games and reviews.</p>'+
+'</div>'+
+
+'<div class="card">'+
+'<h3>'+link("weather","WeatherWorld")+'</h3>'+
+'<p>Check the weather.</p>'+
+'</div>'+
+
+'<div class="card">'+
+'<h3>'+link("news","WorldNews")+'</h3>'+
+'<p>Today's news.</p>'+
+'</div>'+
+
+'<div class="card">'+
+'<h3>'+link("forum","ForumZone")+'</h3>'+
+'<p>Talk about anything.</p>'+
+'</div>'+
+
+'</div>'+
+
+'<p class="small">* Probably not actually the whole web.</p>'+
+
+'</div>'
+);
+
+document.getElementById("searchBtn").onclick=doSearch;
+
+document.getElementById("search").onkeydown=function(e){
+
+if(e.key==="Enter"){
+doSearch();
+}
+
+};
+
+};
+
+/* SEARCH */
+
+function doSearch(){
+
+const q=document.getElementById("search").value.trim();
+
+if(!q)return;
+
+searches.push(q);
+
+const low=q.toLowerCase();
+
+let results=[];
+
+function add(site,title,text){
+
+results.push(
+'<div class="box">'+
+'<h3>'+link(site,title)+'</h3>'+
+'<p>'+text+'</p>'+
+'</div>'
+);
+
+}
+
+if(
+/cult|sect|group|religion|ritual|church|belief/
+.test(low)
+){
+
+add(
+"cultwatch",
+"CultWatch",
+"Independent research about unusual religious and social groups."
+);
+
+add(
+"archive",
+"The Cult Archive",
+"A searchable archive of historical cult reports."
+);
+
+add(
+"cultnews",
+"CultNews",
+"News and investigations concerning modern cults."
+);
+
+add(
+"exmembers",
+"ExMembers",
+"Stories from people who say they left controlling groups."
+);
+
+}
+
+if(
+/open eye|openeye|eye|elys|vale|hollow|garden/
+.test(low)
+){
+
+add(
+"cultwatch",
+"The Open Eye — CultWatch entry",
+"A small online group mentioned in several old reports."
+);
+
+add(
+"garden",
+"GardenTalk",
+"An archived gardening discussion contains a strange reference."
+);
+
+}
+
+if(/game|games/.test(low)){
+
+add(
+"gamehub",
+"GameHub 2004",
+"The latest games, cheats and reviews."
+);
+
+}
+
+if(/weather/.test(low)){
+
+add(
+"weather",
+"WeatherWorld",
+"Today's weather and tomorrow's forecast."
+);
+
+}
+
+if(/fish|fishing/.test(low)){
+
+add(
+"gamehub",
+"Fishing Mania",
+"A relaxing fishing game."
+);
+
+}
+
+if(!results.length){
+
+results.push(
+'<div class="box">'+
+'<h3>No exact results.</h3>'+
+'<p>Try a broader search.</p>'+
+'</div>'
+);
+
+results.push(
+'<div class="box">'+
+'<h3>'+link("picshare","PicShare")+'</h3>'+
+'<p>Pictures from around the web.</p>'+
+'</div>'
+);
+
+}
+
+layout(
+"Search Results",
+'<p>Results for <b>'+esc(q)+'</b></p>'+
+results.join("")
+);
+
+}
+
+/* PICSHARE */
+
+routes.picshare=function(){
+
+layout(
+"PicShare",
+
+'<div class="siteNav">'+
+'HOME &nbsp; MY ALBUM &nbsp; FRIENDS &nbsp; '+
+link("searchly","SEARCH")+
+'</div>'+
+
+'<div class="marquee">'+
+'WELCOME TO PICSHARE!!! POST YOUR PICS!!! :D'+
+'</div>'+
+
+'<div class="grid">'+
+
+'<div class="card">'+
+'<h3>My cat!!!</h3>'+
+'<div style="font-size:80px;text-align:center">🐈</div>'+
+'<p>Posted by Jamie_2004</p>'+
+'</div>'+
+
+'<div class="card">'+
+'<h3>My new skateboard</h3>'+
+'<div style="font-size:80px;text-align:center">🛹</div>'+
+'<p>Posted by Tyler</p>'+
+'</div>'+
+
+'<div class="card">'+
+'<h3>Weird flower?</h3>'+
+'<div style="font-size:80px;text-align:center">🌺</div>'+
+'<p>Posted by greenThumb89</p>'+
+'<p>Anyone know what this is?</p>'+
+'</div>'+
+
+'</div>'+
+
+'<div class="box">'+
+'<h3>Random user page</h3>'+
+'<p>user: <b>elysium_17</b></p>'+
+'<p>favorite color: gray</p>'+
+'<p>favorite place: gardens</p>'+
+'<p>website: '+link("garden","GardenTalk")+'</p>'+
+'</div>'
+);
+
+};
+
+/* TUBEBOX */
+
+routes.tubebox=function(){
+
+layout(
+"TubeBox",
+
+'<div class="siteNav">'+
+'TubeBox | Videos | Upload | My Account'+
+'</div>'+
+
+'<h2>FEATURED VIDEOS</h2>'+
+
+'<div class="grid">'+
+
+'<div class="card">'+
+'<h3>Funny Dog Compilation</h3>'+
+'<div style="font-size:70px;text-align:center">🐕</div>'+
+'<button>PLAY</button>'+
+'</div>'+
+
+'<div class="card">'+
+'<h3>My First Skate Video</h3>'+
+'<div style="font-size:70px;text-align:center">🛹</div>'+
+'<button>PLAY</button>'+
+'</div>'+
+
+'<div class="card">'+
+'<h3>Urban Legends #3</h3>'+
+'<div style="font-size:70px;text-align:center">📼</div>'+
+'<button>PLAY</button>'+
+'<p class="small">Uploaded 2 years ago.</p>'+
+'</div>'+
+
+'</div>'+
+
+'<div class="notice">'+
+'TubeBox has 12,403 videos!'+
+'</div>'
+);
+
+};
+
+/* GAMEHUB */
+
+routes.gamehub=function(){
+
+layout(
+"GameHub 2004",
+
+'<div class="marquee">'+
+'★★★ GAME OF THE WEEK: SPACE WARRIOR ★★★'+
+'</div>'+
+
+'<div class="grid">'+
+
+'<div class="card">'+
+'<h3>Space Warrior</h3>'+
+'<p>★★★★☆</p>'+
+'<p>Defeat aliens and save Earth!</p>'+
+'<button>READ REVIEW</button>'+
+'</div>'+
+
+'<div class="card">'+
+'<h3>Fishing Mania</h3>'+
+'<p>★★★☆☆</p>'+
+'<p>A relaxing fishing game.</p>'+
+'<button>READ REVIEW</button>'+
+'</div>'+
+
+'<div class="card">'+
+'<h3>Haunted House 2</h3>'+
+'<p>★★★★★</p>'+
+'<p>Scariest game of the year!</p>'+
+'<button>READ REVIEW</button>'+
+'</div>'+
+
+'</div>'+
+
+'<div class="box">'+
+'<h3>Cheat Codes</h3>'+
+'<p>Don't cheat! ;)</p>'+
+'<p>Our users have submitted 4,812 cheats.</p>'+
+'</div>'
+);
+
+};
+
+/* WEATHER */
+
+routes.weather=function(){
+
+layout(
+"WeatherWorld",
+
+'<div class="center">'+
+'<h2>WEATHERWORLD</h2>'+
+'<p>Pick a city:</p>'+
+'<button>Springfield</button> '+
+'<button>Chicago</button> '+
+'<button>New York</button>'+
+
+'<div class="box">'+
+'<h2>☀️ 72°F</h2>'+
+'<p>Mostly sunny. Wind 7 MPH.</p>'+
+'<p>Tomorrow: cloudy.</p>'+
+'</div>'+
+
+'<p class="small">'+
+'WeatherWorld does not know why you keep checking this page.'+
+'</p>'+
+
+'</div>'
+);
+
+};
+
+/* BUYBUY */
+
+routes.buybuy=function(){
+
+layout(
+"BuyBuy",
+
+'<div class="marquee">'+
+'BUY STUFF! YOU NEED STUFF!'+
+'</div>'+
+
+'<div class="grid">'+
+
+'<div class="card">'+
+'<h3>Blue MP3 Player</h3>'+
+'<p>$49.99</p>'+
+'<button>ADD TO CART</button>'+
+'</div>'+
+
+'<div class="card">'+
+'<h3>Glow-in-the-dark stars</h3>'+
+'<p>$4.99</p>'+
+'<button>ADD TO CART</button>'+
+'</div>'+
+
+'<div class="card">'+
+'<h3>Totally Real Psychic Crystal</h3>'+
+'<p>$12.99</p>'+
+'<button>ADD TO CART</button>'+
+'</div>'+
+
+'</div>'
+);
+
+};
+
+/* FOOD */
+
+routes.food=function(){
+
+layout(
+"FoodFinder",
+
+'<h2>Recipes people are talking about</h2>'+
+
+'<div class="grid">'+
+
+'<div class="card">'+
+'<h3>Mac & Cheese</h3>'+
+'<p>★★★★★</p>'+
+'</div>'+
+
+'<div class="card">'+
+'<h3>Chocolate Cake</h3>'+
+'<p>★★★★☆</p>'+
+'</div>'+
+
+'<div class="card">'+
+'<h3>Grandma\'s Chili</h3>'+
+'<p>★★★★★</p>'+
+'</div>'+
+
+'</div>'
+);
+
+};
+
+/* NEWS */
+
+routes.news=function(){
+
+layout(
+"WorldNews",
+
+'<div class="siteNav">'+
+'BREAKING NEWS | LOCAL | WORLD | TECH | STRANGE'+
+'</div>'+
+
+'<h2>Today\'s Headlines</h2>'+
+
+'<div class="box">'+
+'<h3>Local library opens new computer room</h3>'+
+'<p>Residents celebrate access to the internet.</p>'+
+'</div>'+
+
+'<div class="box">'+
+'<h3>Internet use continues to grow</h3>'+
+'<p>More families are connecting every month.</p>'+
+'</div>'+
+
+'<div class="box">'+
+'<h3>'+
+link("cultnews","STRANGE: Small online group attracts hundreds")+
+'</h3>'+
+'<p>Authorities say there is currently no reason for concern.</p>'+
+'</div>'
+);
+
+};
+
+/* FORUM */
+
+routes.forum=function(){
+
+layout(
+"ForumZone",
+
+'<div class="siteNav">'+
+'ForumZone &gt; General Chat'+
+'</div>'+
+
+'<div id="forumList">'+
+
+'<div>'+
+'<span class="user">SkaterKid</span>: Anyone else hate Mondays?'+
+'</div>'+
+
+'<div>'+
+'<span class="user">CatLady</span>: Look at my new kitten!!!'+
+'</div>'+
+
+'<div>'+
+'<span class="user">HistoryBuff</span>: Does anyone know good sites about old religious groups?'+
+'</div>'+
+
+'<div>'+
+'<span class="user">Elysium17</span>: Try '+
+link("cultwatch","CultWatch")+
+'.</div>'+
+
+'<div>'+
+'<span class="user">BlueSky</span>: Why do people keep posting about the Eye?'+
+'</div>'+
+
+'</div>'+
+
+'<div class="box">'+
+'Want to start a thread? <button>REGISTER</button>'+
+'</div>'
+);
+
+};
+
+/* CULTWATCH */
+
+routes.cultwatch=function(){
+
+player.investigation++;
+
+layout(
+"CultWatch",
+
+'<div class="siteNav">'+
+'CultWatch | Home | Database | '+
+link("archive","Archive")+
+' | '+
+link("exmembers","ExMembers")+
+'</div>'+
+
+'<div class="notice">'+
+'<b>Independent research site.</b> '+
+'This website documents controlling organizations and online communities.'+
+'</div>'+
+
+'<h2>Featured Investigation</h2>'+
+
+'<div class="box">'+
+'<h3>THE OPEN EYE</h3>'+
+'<p>Classification: <b>Online spiritual movement</b></p>'+
+'<p>First documented: 2001</p>'+
+'<p>Current status: Active</p>'+
+'<p>Little is known about the group\'s leadership.</p>'+
+'<p>'+link("archive","View archived documents")+'</p>'+
+'</div>'+
+
+'<h2>Other research</h2>'+
+
+'<ul>'+
+'<li>The Hollow Creek Fellowship</li>'+
+'<li>The Veyra Circle</li>'+
+'<li>The Children of the Star</li>'+
+'<li>The Lantern Society</li>'+
+'</ul>'+
+
+'<p>'+
+link("garden","A strange reference in an old gardening forum")+
+'</p>'
+);
+
+};
+
+/* ARCHIVE */
+
+routes.archive=function(){
+
+layout(
+"The Cult Archive",
+
+'<div class="siteNav">'+
+'Cult Archive | Search | Documents | Timeline'+
+'</div>'+
+
+'<p>Digitized records from researchers around the world.</p>'+
+
+'<div class="searchRow">'+
+'<input id="archSearch" placeholder="Search archive">'+
+'<button id="archBtn">Search</button>'+
+'</div>'+
+
+'<div class="box">'+
+'<h3>OPEN EYE — 2001-2004</h3>'+
+'<p>Files concerning an online group using an eye symbol.</p>'+
+'<p>Status: <b>Incomplete</b></p>'+
+'<button id="unlockArchive">VIEW FILE</button>'+
+'</div>'+
+
+'<div class="box">'+
+'<h3>VEYRA CIRCLE — 1989</h3>'+
+'<p>Historical organization. No known connection.</p>'+
+'</div>'
+);
+
+document.getElementById("unlockArchive").onclick=function(){
+
+modal(
+"Archive File OE-17",
+
+'<p>The Open Eye began as a discussion group.</p>'+
+'<p>Early members described it as a place for people who felt isolated.</p>'+
+'<p>A username appears repeatedly in old records:</p>'+
+'<p class="center"><b>elysium_17</b></p>'+
+'<p>A link was removed from the original archive.</p>'+
+'<p>Researchers believe it pointed toward a gardening discussion board.</p>'
+);
+
+};
+
+};
+
+/* EX MEMBERS */
+
+routes.exmembers=function(){
+
+layout(
+"ExMembers",
+
+'<div class="siteNav">'+
+'ExMembers | Stories | Support | Resources'+
+'</div>'+
+
+'<h2>Former members speak</h2>'+
+
+'<div class="post">'+
+'<span class="user">quietbird</span>'+
+'<p>I joined because I wanted answers. They were kind at first.</p>'+
+'</div>'+
+
+'<div class="post">'+
+'<span class="user">former_eye</span>'+
+'<p>Do not confuse attention with friendship.</p>'+
+'</div>'+
+
+'<div class="post">'+
+'<span class="user">greenroom</span>'+
+'<p>They told me everyone outside was afraid of the truth.</p>'+
+'</div>'+
+
+'<div class="post">'+
+'<span class="user">deleted_user</span>'+
+'<p>If you find the old garden link, don\'t use the invitation.</p>'+
+'</div>'+
+
+'<p>'+link("cultwatch","Back to CultWatch")+'</p>'
+);
+
+};
+
+/* CULT NEWS */
+
+routes.cultnews=function(){
+
+layout(
+"CultNews",
+
+'<div class="siteNav">'+
+'CultNews | Investigations | Reports | Tips'+
+'</div>'+
+
+'<h2>Online group investigated</h2>'+
+
+'<p><b>Posted: June 18, 2004</b></p>'+
+
+'<div class="box">'+
+
+'<p>'+
+'Researchers are investigating a growing online community called '+
+'<b>The Open Eye</b>.'+
+'</p>'+
+
+'<p>'+
+'The group reportedly uses a private invitation system.'+
+'</p>'+
+
+'<p>'+
+'Several former members claim that participation can become increasingly controlling.'+
+'</p>'+
+
+'<p>'+
+'Representatives of the group declined to comment.'+
+'</p>'+
+
+'</div>'+
+
+'<h3>Related:</h3>'+
+
+'<p>'+link("exmembers","Former members discuss their experiences")+'</p>'+
+
+'<p>'+link("cultwatch","CultWatch investigation")+'</p>'
+);
+
+};
+
+/* GARDENTALK */
+
+routes.garden=function(){
+
+layout(
+"GardenTalk",
+
+'<div class="siteNav">'+
+'GardenTalk | Plants | Gardening | Off Topic'+
+'</div>'+
+
+'<div class="marquee">'+
+'WELCOME GARDENERS!!! 🌱'+
+'</div>'+
+
+'<h2>Old forum thread #18492</h2>'+
+
+'<div class="post">'+
+'<sp
