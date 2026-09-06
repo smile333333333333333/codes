@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SYSTEM//FOUND</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+html,body{
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#050805;
+    color:#baffbf;
+    font-family:monospace;
+}
+
+button{
+    font-family:monospace;
+    background:#0d180f;
+    color:#baffbf;
+    border:1px solid #4c9957;
+    padding:12px 18px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#19321d;
+}
+
+.screen{
+    position:absolute;
+    inset:0;
+    display:none;
+}
+
+.screen.active{
+    display:block;
+}
+
+/* ================= MENU ================= */
+
+#menu{
+    text-align:center;
+    padding-top:100px;
+    background:#050805;
+}
+
+.logo{
+    font-size:42px;
+    letter-spacing:7px;
+    text-shadow:0 0 15px #57ff69;
+}
+
+.subtitle{
+    margin-top:10px;
+    color:#658d69;
+}
+
+.menuButtons{
+    width:250px;
+    margin:55px auto 0;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+
+.menuButtons button{
+    width:100%;
+}
+
+#status{
+    margin-top:40px;
+    color:#587b5d;
+}
+
+/* ================= TOP MENU BUTTON ================= */
+
+.topMenu{
+    position:fixed;
+    top:12px;
+    right:12px;
+    z-index:999;
+}
+
+/* ================= TERMINAL ================= */
+
+#terminal{
+    background:#020402;
+    padding:30px;
+}
+
+.terminalWindow{
+    width:min(900px,95vw);
+    height:90vh;
+    margin:auto;
+    border:1px solid #397344;
+    padding:20px;
+    overflow:auto;
+    box-shadow:0 0 25px rgba(50,150,70,.15);
+}
+
+.terminalHeader{
+    border-bottom:1px solid #397344;
+    padding-bottom:15px;
+    margin-bottom:20px;
+}
+
+#terminalOutput{
+    white-space:pre-wrap;
+    line-height:1.6;
+    min-height:300px;
+}
+
+.inputLine{
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+#terminalInput{
+    flex:1;
+    background:transparent;
+    color:#baffbf;
+    border:0;
+    border-bottom:1px solid #397344;
+    outline:none;
+    font-family:monospace;
+    padding:10px;
+}
+
+/* ================= WORLD ================= */
+
+#world{
+    background:#101a12;
+}
+
+#hud{
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    padding:13px;
+    background:rgba(0,0,0,.7);
+    z-index:20;
+}
+
+#map{
+    position:absolute;
+    width:900px;
+    height:600px;
+    left:50%;
+    top:52%;
+    transform:translate(-50%,-50%);
+    border:2px solid #315b38;
+
+    background:
+        linear-gradient(#17251a 1px,transparent 1px),
+        linear-gradient(90deg,#17251a 1px,transparent 1px);
+
+    background-size:50px 50px;
+}
+
+#player{
+    position:absolute;
+    width:24px;
+    height:24px;
+    left:438px;
+    top:288px;
+    background:#a0ffa5;
+    box-shadow:0 0 12px #70ff7a;
+    border-radius:4px;
+    z-index:10;
+}
+
+.object{
+    position:absolute;
+    padding:9px;
+    background:#0a120c;
+    border:1px solid #47784e;
+    cursor:pointer;
+    user-select:none;
+}
+
+#house{
+    left:90px;
+    top:90px;
+}
+
+#lake{
+    left:650px;
+    top:380px;
+}
+
+#tower{
+    left:390px;
+    top:70px;
+}
+
+#door{
+    left:750px;
+    top:100px;
+    opacity:.35;
+}
+
+#forest{
+    left:90px;
+    top:400px;
+}
+
+#message{
+    position:absolute;
+    bottom:18px;
+    left:50%;
+    transform:translateX(-50%);
+    width:min(800px,90vw);
+    padding:13px;
+    text-align:center;
+    background:rgba(0,0,0,.8);
+    border:1px solid #315b38;
+}
+
+/* ================= FISHING ================= */
+
+#fishing{
+    background:#071417;
+    text-align:center;
+    padding-top:90px;
+}
+
+#water{
+    position:relative;
+    width:min(800px,85vw);
+    height:300px;
+    margin:30px auto;
+    border:1px solid #39717a;
+
+    background:
+        repeating-linear-gradient(
+            0deg,
+            #07191c,
+            #07191c 18px,
+            #0b292d 20px
+        );
+}
+
+#bobber{
+    position:absolute;
+    width:15px;
+    height:15px;
+    border-radius:50%;
+    background:#ddd;
+    left:50%;
+    top:50%;
+}
+
+/* ================= ARCHIVE ================= */
+
+#archive{
+    padding:60px 20px;
+    overflow:auto;
+    background:#070b08;
+}
+
+.archiveContainer{
+    width:min(850px,95vw);
+    margin:auto;
+}
+
+.archiveContainer h1{
+    text-align:center;
+}
+
+.archiveIntro{
+    text-align:center;
+    color:#6d9671;
+}
+
+.codeCard{
+    margin:15px 0;
+    padding:18px;
+    border:1px solid #315b38;
+    background:#0b130d;
+}
+
+.codeName{
+    font-size:25px;
+    letter-spacing:3px;
+    color:#91ff99;
+}
+
+.codeSource{
+    margin-top:8px;
+    color:#719276;
+}
+
+.codeEffect{
+    margin-top:12px;
+}
+
+.typeBox{
+    margin-top:15px;
+    padding:12px;
+    border:1px dashed #4d9957;
+    color:#91ff99;
+}
+
+/* ================= SCARE ================= */
+
+#scare{
+    position:fixed;
+    inset:0;
+    z-index:2000;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    background:#000;
+    text-align:center;
+}
+
+#scareText{
+    font-size:30px;
+    line-height:1.7;
+}
+
+/* ================= MOBILE ================= */
+
+@media(max-width:700px){
+
+    .logo{
+        font-size:27px;
+        letter-spacing:4px;
+    }
+
+    #menu{
+        padding-top:80px;
+    }
+
+    #map{
+        transform:translate(-50%,-50%) scale(.65);
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+<!-- =================================================
+     MAIN MENU
+================================================= -->
+
+<section id="menu" class="screen active">
+
+    <div class="logo">
+        SYSTEM//FOUND
+    </div>
+
+    <div class="subtitle">
+        something is hiding in the game
+    </div>
+
+    <div class="menuButtons">
+
+        <button id="startButton">
+            START GAME
+        </button>
+
+        <button id="terminalButton">
+            TERMINAL
+        </button>
+
+        <button id="archiveButton">
+            ARCHIVE
+        </button>
+
+    </div>
+
+    <div id="status">
+
+        SYSTEM STATUS: NORMAL<br><br>
+
+        DISCOVERED CODES:
+        <span id="menuCodeCount">0</span>
+
+    </div>
+
+</section>
+
+
+<!-- =================================================
+     TERMINAL
+================================================= -->
+
+<section id="terminal" class="screen">
+
+    <button class="topMenu" id="terminalMenuButton">
+        ☰ MENU
+    </button>
+
+    <div class="terminalWindow">
+
+        <div class="terminalHeader">
+            SYSTEM TERMINAL v2.0
+        </div>
+
+        <div id="terminalOutput">SYSTEM ONLINE.
+
+EVERY COMMAND IS ACCEPTED.
+
+Some commands have documented effects.
+Others may have effects you haven't discovered yet.
+
+--------------------------------
+
+</div>
+
+        <div class="inputLine">
+
+            <span>&gt;</span>
+
+            <input
+                id="terminalInput"
+                autocomplete="off"
+                spellcheck="false"
+            >
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =================================================
+     WORLD
+================================================= -->
+
+<section id="world" class="screen">
+
+    <button class="topMenu" id="worldMenuButton">
+        ☰ MENU
+    </button>
+
+    <div id="hud">
+
+        AREA:
+        <span id="areaName">OUTSIDE</span>
+
+        &nbsp; | &nbsp;
+
+        CODES:
+        <span id="worldCodeCount">0</span>
+
+        &nbsp; | &nbsp;
+
+        WASD / ARROW KEYS
+
+    </div>
+
+
+    <div id="map">
+
+        <div id="player"></div>
+
+
+        <div
+            id="house"
+            class="object">
+            HOUSE
+        </div>
+
+
+        <div
+            id="lake"
+            class="object">
+            LAKE
+        </div>
+
+
+        <div
+            id="tower"
+            class="object">
+            TOWER
+        </div>
+
+
+        <div
+            id="door"
+            class="object">
+            ??? DOOR
+        </div>
+
+
+        <div
+            id="forest"
+            class="object">
+            FOREST
+        </div>
+
+    </div>
+
+
+    <div id="message">
+        Explore the area.
+    </div>
+
+</section>
+
+
+<!-- =================================================
+     FISHING
+================================================= -->
+
+<section id="fishing" class="screen">
+
+    <button class="topMenu" id="fishingMenuButton">
+        ☰ MENU
+    </button>
+
+    <h1>FISHING</h1>
+
+    <p>
+        The water is strangely quiet.
+    </p>
+
+    <div id="water">
+
+        <div id="bobber"></div>
+
+    </div>
+
+    <button id="castButton">
+        CAST LINE
+    </button>
+
+    <button id="leaveFishingButton">
+        LEAVE
+    </button>
+
+    <p id="fishMessage">
+        Cast your line.
+    </p>
+
+</section>
+
+
+<!-- =================================================
+     ARCHIVE
+================================================= -->
+
+<section id="archive" class="screen">
+
+    <button class="topMenu" id="archiveMenuButton">
+        ☰ MENU
+    </button>
+
+    <div class="archiveContainer">
+
+        <h1>DISCOVERY ARCHIVE</h1>
+
+        <p class="archiveIntro">
+            Every discovered code is recorded here.
+            <br>
+            The archive tells you exactly what to type.
+        </p>
+
+        <hr>
+
+        <div id="archiveList">
+
+            <p>
+                NO CODES DISCOVERED.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =================================================
+     SCARY EVENT
+================================================= -->
+
+<div id="scare">
+
+    <div id="scareText"></div>
+
+</div>
+
+
+<script>
+
+/* =================================================
+   SCREEN SYSTEM
+================================================= */
+
+const screens = [
+    "menu",
+    "terminal",
+    "world",
+    "fishing",
+    "archive"
+];
+
+function showScreen(name){
+
+    screens.forEach(id => {
+
+        const screen =
+            document.getElementById(id);
+
+        if(screen){
+            screen.classList.remove("active");
+        }
+
+    });
+
+    const target =
+        document.getElementById(name);
+
+    if(target){
+        target.classList.add("active");
+    }
+
+}
+
+
+/* =================================================
+   BUTTONS
+================================================= */
+
+document
+    .getElementById("startButton")
+    .addEventListener("click",function(){
+
+        startGame();
+
+    });
+
+
+document
+    .getElementById("terminalButton")
+    .addEventListener("click",function(){
+
+        openTerminal();
+
+    });
+
+
+document
+    .getElementById("archiveButton")
+    .addEventListener("click",function(){
+
+        showArchive();
+
+    });
+
+
+document
+    .getElementById("terminalMenuButton")
+    .addEventListener("click",showMenu);
+
+
+document
+    .getElementById("worldMenuButton")
+    .addEventListener("click",showMenu);
+
+
+document
+    .getElementById("fishingMenuButton")
+    .addEventListener("click",showMenu);
+
+
+document
+    .getElementById("archiveMenuButton")
+    .addEventListener("click",showMenu);
+
+
+document
+    .getElementById("castButton")
+    .addEventListener("click",castLine);
+
+
+document
+    .getElementById("leaveFishingButton")
+    .addEventListener("click",function(){
+
+        showScreen("world");
+
+    });
+
+
+function showMenu(){
+
+    showScreen("menu");
+
+}
+
+
+function startGame(){
+
+    showScreen("world");
+
+    message(
+        "You wake up outside a strange house."
+    );
+
+}
+
+
+function openTerminal(){
+
+    showScreen("terminal");
+
+    setTimeout(function(){
+
+        document
+            .getElementById("terminalInput")
+            .focus();
+
+    },100);
+
+}
+
+
+function showArchive(){
+
+    showScreen("archive");
+
+    updateArchive();
+
+}
+
+
+/* =================================================
+   CODE SYSTEM
+================================================= */
+
+const discoveredCodes = {};
+
+
+const codeInfo = {
+
+    FISH:{
+        source:"Caught your first fish.",
+        effect:"Unlocks strange fishing-related events."
+    },
+
+    HOUSE:{
+        source:"Inspected the abandoned house.",
+        effect:"Reveals that the house contains a hidden clue."
+    },
+
+    WATCH:{
+        source:"Found the note inside the tower.",
+        effect:"Something begins watching the player."
+    },
+
+    DEEP:{
+        source:"Found something unusual beneath the lake.",
+        effect:"Reveals that the lake is much deeper than it should be."
+    },
+
+    FOREST:{
+        source:"Discovered the strange forest.",
+        effect:"Unlocks the deeper forest."
+    },
+
+    DOOR:{
+        source:"Discovered the hidden door.",
+        effect:"Opens access to the underground area."
+    },
+
+    NIGHT:{
+        source:"Discovered the word NIGHT.",
+        effect:"Changes the world into nighttime."
+    },
+
+    HUNT:{
+        source:"Found a warning about being hunted.",
+        effect:"Adds a hunter to the world."
+    },
+
+    BLACKOUT:{
+        source:"Found the emergency-system clue.",
+        effect:"Turns almost all lights off."
+    },
+
+    CORRUPT:{
+        source:"Found a corrupted system message.",
+        effect:"Causes visual glitches."
+    },
+
+    TRUTH:{
+        source:"Reached a hidden archive.",
+        effect:"Reveals part of the truth."
+    },
+
+    ALONE:{
+        source:"Found the word ALONE where it shouldn't be.",
+        effect:"Triggers a strange encounter."
+    },
+
+    FACTORY:{
+        source:"Discovered an impossible structure.",
+        effect:"Reveals another layer of the world."
+    },
+
+    WAKE:{
+        source:"Found a message telling you to wake up.",
+        effect:"Changes the system's behavior."
+    },
+
+    ESCAPE:{
+        source:"Found a hidden escape instruction.",
+        effect:"Unlocks a possible way out."
+    }
+
+};
+
+
+/*
+    Discovering a code records it.
+
+    IMPORTANT:
+    Codes are NOT consumed.
+    You can type them forever.
+*/
+
+function discoverCode(code){
+
+    code =
+        code
+        .trim()
+        .toUpperCase();
+
+    if(!code){
+        return;
+    }
+
+    if(!discoveredCodes[code]){
+
+        discoveredCodes[code] = true;
+
+        addTerminal(
+            "\nNEW CODE DISCOVERED: " +
+            code +
+            "\n"
+        );
+
+    }
+
+    updateCounters();
+    updateArchive();
+
+}
+
+
+/* =================================================
+   TERMINAL
+================================================= */
+
+document
+    .getElementById("terminalInput")
+    .addEventListener("keydown",function(event){
+
+        if(event.key === "Enter"){
+
+            const code =
+                this.value
+                .trim()
+                .toUpperCase();
+
+            this.value = "";
+
+            if(code){
+                runCode(code);
+            }
+
+        }
+
+    });
+
+
+function addTerminal(text){
+
+    const output =
+        document.getElementById("terminalOutput");
+
+    output.textContent += text;
+
+    output.scrollTop =
+        output.scrollHeight;
+
+}
+
+
+function runCode(code){
+
+    addTerminal(
+        "\n> " + code + "\n"
+    );
+
+    /*
+        EVERY WORD WORKS.
+
+        Even a word that isn't documented
+        is accepted by the terminal.
+    */
+
+    discoverCode(code);
+
+    if(codeInfo[code]){
+
+        addTerminal(
+            "\nCOMMAND ACCEPTED.\n" +
+            codeInfo[code].effect +
+            "\n"
+        );
+
+    }else{
+
+        addTerminal(
+            "\nCOMMAND ACCEPTED.\n" +
+            "NO DOCUMENTED EFFECT.\n"
+        );
+
+    }
+
+    applyCode(code);
+
+}
+
+
+/* =================================================
+   CODE EFFECTS
+================================================= */
+
+let state = {
+
+    night:false,
+    hunt:false,
+    blackout:false,
+    forest:false,
+    door:false,
+    corrupt:false,
+    truth:0
+
+};
+
+
+function applyCode(code){
+
+    if(code === "NIGHT"){
+
+        state.night = true;
+
+        document
+            .getElementById("world")
+            .style.filter =
+            "brightness(.42)";
+
+        message(
+            "Night has fallen."
+        );
+
+    }
+
+
+    if(code === "BLACKOUT"){
+
+        state.blackout = true;
+
+        document
+            .getElementById("world")
+            .style.filter =
+            "brightness(.13)";
+
+        message(
+            "The lights have gone out."
+        );
+
+    }
+
+
+    if(code === "CORRUPT"){
+
+        state.corrupt = true;
+
+        message(
+            "SYSTEM CORRUPTION DETECTED."
+        );
+
+        document.body.style.transform =
+            "skew(1deg)";
+
+        setTimeout(function(){
+
+            document.body.style.transform = "";
+
+        },400);
+
+    }
+
+
+    if(code === "FOREST"){
+
+        state.forest = true;
+
+        const forest =
+            document.getElementById("forest");
+
+        forest.style.opacity = "1";
+
+        message(
+            "The forest has opened."
+        );
+
+    }
+
+
+    if(code === "DOOR"){
+
+        state.door = true;
+
+        const door =
+            document.getElementById("door");
+
+        door.style.opacity = "1";
+
+        door.textContent =
+            "HIDDEN DOOR";
+
+        message(
+            "A hidden door appeared."
+        );
+
+    }
+
+
+    if(code === "HUNT"){
+
+        if(!state.hunt){
+
+            state.hunt = true;
+
+            message(
+                "Something is hunting you."
+            );
+
+            setTimeout(
+                huntEvent,
+                5000
+            );
+
+        }else{
+
+            message(
+                "The hunt is already active."
+            );
+
+        }
+
+    }
+
+
+    if(code === "WATCH"){
+
+        message(
+            "You feel like something is watching."
+        );
+
+        setTimeout(function(){
+
+            scare(
+                "I SAW YOU FIND<br>THE CODE."
+            );
+
+        },1800);
+
+    }
+
+
+    if(code === "DEEP"){
+
+        message(
+            "The lake suddenly looks much deeper."
+        );
+
+        setTimeout(function(){
+
+            scare(
+                "THERE IS SOMETHING<br>UNDER THE LAKE."
+            );
+
+        },1500);
+
+    }
+
+
+    if(code === "ALONE"){
+
+        message(
+            "ALONE accepted."
+        );
+
+        setTimeout(function(){
+
+            scare(
+                "YOU ARE NOT ALONE."
+            );
+
+        },1500);
+
+    }
+
+
+    if(code === "TRUTH"){
+
+        state.truth++;
+
+        message(
+            "ARCHIVE ENTRY UNLOCKED."
+        );
+
+    }
+
+
+    if(code === "FACTORY"){
+
+        state.truth += 2;
+
+        message(
+            "Something impossible has appeared."
+        );
+
+    }
+
+
+    if(code === "WAKE"){
+
+        document.title =
+            "WAKE UP";
+
+        message(
+            "The system doesn't like that command."
+        );
+
+    }
+
+
+    if(code === "ESCAPE"){
+
+        state.truth += 3;
+
+        message(
+            "ESCAPE accepted.\n" +
+            "But escape from what?"
+        );
+
+    }
+
+    updateArchive();
+
+}
+
+
+/* =================================================
+   ARCHIVE
+================================================= */
+
+function updateArchive(){
+
+    const list =
+        document.getElementById("archiveList");
+
+    const codes =
+        Object.keys(discoveredCodes);
+
+    if(codes.length === 0){
+
+        list.innerHTML =
+            "<p>NO CODES DISCOVERED.</p>";
+
+        return;
+
+    }
+
+    list.innerHTML = "";
+
+    codes.forEach(function(code){
+
+        const card =
+            document.createElement("div");
+
+        card.className =
+            "codeCard";
+
+        const info =
+            codeInfo[code];
+
+        if(info){
+
+            card.innerHTML =
+
+                '<div class="codeName">' +
+                escapeHTML(code) +
+                '</div>' +
+
+                '<div class="codeSource">' +
+                '<b>DISCOVERED FROM:</b><br>' +
+                escapeHTML(info.source) +
+                '</div>' +
+
+                '<div class="codeEffect">' +
+                '<b>EFFECT:</b><br>' +
+                escapeHTML(info.effect) +
+                '</div>' +
+
+                '<div class="typeBox">' +
+                '<b>TYPE THIS INTO THE TERMINAL:</b>' +
+                '<br><br>' +
+                escapeHTML(code) +
+                '</div>';
+
+        }else{
+
+            card.innerHTML =
+
+                '<div class="codeName">' +
+                escapeHTML(code) +
+                '</div>' +
+
+                '<div class="typeBox">' +
+                '<b>TYPE THIS INTO THE TERMINAL:</b>' +
+                '<br><br>' +
+                escapeHTML(code) +
+                '</div>';
+
+        }
+
+        list.appendChild(card);
+
+ 
