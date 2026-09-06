@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WebWorld 2004</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#9ac5e8;font:14px Arial;color:#222}
+#bar{height:55px;background:#123f78;color:white;padding:10px;display:flex;gap:8px;align-items:center}
+#bar b{font-size:20px}#url{background:white;color:#555;padding:6px;flex:1}
+button{cursor:pointer}a{color:#00e;text-decoration:underline;cursor:pointer}
+#browser{width:95%;max-width:1100px;margin:15px auto;background:white;border:4px ridge #ccc;min-height:650px}
+#tabs{background:#ccc;padding:6px}.tab{background:#eee;padding:6px;border:1px solid #888}
+#page{min-height:650px}.head{padding:15px;border-bottom:5px solid #222}
+.head h1{margin:0;font-size:32px}.body{padding:15px}.nav{background:#003399;color:white;padding:8px}
+.nav a{color:white;margin-right:12px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.box,.card,.post{padding:10px;margin:10px 0;border:2px outset #ccc;background:#f8f8f8}
+.card{border:2px solid #777}.yellow{background:#ffff99}.pink{background:#ffb8e9}
+.blue{background:#bce5ff}.green{background:#baffb0}.purple{background:#d7b7ff}
+.marquee{background:#ff0;color:red;border:2px solid red;padding:5px;font-weight:bold}
+.center{text-align:center}.small{font-size:11px}.search{display:flex;gap:5px}.search input{flex:1;padding:8px}
+#start{position:fixed;inset:0;background:#174a82;display:flex;align-items:center;justify-content:center;z-index:9}
+#welcome{background:#eee;border:6px ridge white;padding:30px;text-align:center;width:90%;max-width:600px}
+#welcome h1{color:#03c;font-size:40px}.big{padding:13px;background:#ffd000;border:3px outset white;font-weight:bold}
+#modal{display:none;position:fixed;inset:0;background:#000b;align-items:center;justify-content:center;z-index:20}
+#modal>div{background:#eee;border:5px ridge #ddd;width:90%;max-width:600px;padding:15px}
+#open{background:#080808;color:#ddd;min-height:650px;font-family:Georgia}
+#open .oh{background:#111;text-align:center;padding:25px}
+#open .eye{font-size:65px}#open .on{background:#222;text-align:center;padding:10px}
+#open .ob{max-width:850px;margin:auto;padding:25px;line-height:1.7}
+@media(max-width:700px){.grid{grid-template-columns:1fr}#bar b{font-size:15px}}
+</style>
+</head>
+<body>
+
+<div id="start">
+<div id="welcome">
+<h1>WebWorld 2004</h1>
+<p><b>WELCOME TO THE INTERNET!!!</b></p>
+<p>Web rings! Forums! Personal pages! Strange websites!</p>
+<p>Somewhere in all of this is a story nobody seems to agree on.</p>
+<button class="big" id="enter">ENTER THE INTERNET</button>
+</div>
+</div>
+
+<div id="bar">
+<b>🌐 WebWorld</b>
+<div id="url">http://searchly.net/</div>
+<button onclick="back()">←</button>
+<button onclick="forward()">→</button>
+<button onclick="go('search')">HOME</button>
+</div>
+
+<div id="browser">
+<div id="tabs"><span class="tab">WebWorld Explorer</span> 🟢 ONLINE</div>
+<div id="page"></div>
+</div>
+
+<div id="modal"><div><button onclick="closeModal()" style="float:right">X</button><h2 id="mt"></h2><div id="mc"></div></div></div>
+
+<script>
+let hist=[],pos=-1;
+let p={name:"Guest",joined:false,trust:0,investigation:0,belief:0};
+let mail=[];
+
+const S={
+search:"Searchly",pic:"PicShare",tube:"TubeBox",game:"GameHub",
+weather:"WeatherWorld",buy:"BuyBuy",food:"FoodFinder",news:"WorldNews",
+forum:"ForumZone",cult:"CultWatch",archive:"Cult Archive",
+ex:"ExMembers",cnews:"CultNews",garden:"GardenTalk",
+music:"MP3 Heaven",anime:"Anime Galaxy",pets:"Pet Palace",
+quiz:"Quiz Palace",conspiracy:"Conspiracy Central",
+religion:"Religion Research",history:"HistoryNet",
+mirror:"Mirror House",lantern:"Lantern Society",
+hollow:"Hollow Creek",veyra:"Veyra Circle",stars:"Children of the Star",
+open:"The Open Eye",guest:"Guestbook Central",webring:"WebRing World"
+};
+
+const U={
+search:"searchly.net",pic:"picshare.net",tube:"tubebox.net",game:"gamehub.net",
+weather:"weatherworld.net",buy:"buybuy.net",food:"foodfinder.net",
+news:"worldnews.net",forum:"forumzone.net",cult:"cultwatch.net",
+archive:"cultarchive.net",ex:"exmembers.net",cnews:"cultnews.net",
+garden:"gardentalk.net",music:"mp3heaven.net",anime:"animegalaxy.net",
+pets:"petpalace.net",quiz:"quizpalace.net",conspiracy:"conspiracy.net",
+religion:"religionresearch.net",history:"historynet.net",mirror:"mirrorhouse.net",
+lantern:"lanternsociety.net",hollow:"hollowcreek.net",veyra:"veyra.net",
+stars:"childrenofstar.net",open:"theopeneye.net",guest:"guestbook.net",
+webring:"webringworld.net"
+};
+
+function L(s,t){return`<a onclick="go('${s}')">${t||S[s]}</a>`}
+function esc(x){return String(x).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}
+function go(s,push=true){
+if(push){hist.splice(pos+1);hist.push(s);pos++}
+document.getElementById("url").textContent="http://"+(U[s]||s)+"/";
+(routes[s]||notfound)();save()
+}
+function back(){if(pos>0){pos--;go(hist[pos],false)}}
+function forward(){if(pos<hist.length-1){pos++;go(hist[pos],false)}}
+function layout(t,b,c=""){
+page.innerHTML=`<div class="head ${c}"><h1>${t}</h1><small>WebWorld Internet Service • 2004</small></div><div class="body">${b}</div>`
+}
+function notfound(){layout("404",`<div class=center><h2>PAGE NOT FOUND</h2>${L("search","Go back to Searchly")}</div>`)}
+function modal(t,c){mt.textContent=t;mc.innerHTML=c;document.getElementById("modal").style.display="flex"}
+function closeModal(){document.getElementById("modal").style.display="none"}
+enter.onclick=()=>{start.style.display="none";go("search")}
+
+/* MAIN SEARCH */
+function home(){
+layout("Searchly",`
+<div class=center>
+<div style="font-size:55px;color:#04c;font-weight:bold">Searchly!</div>
+<p>SEARCH THE WHOLE WEB*</p>
+<div class=search><input id=q placeholder="search the internet"><button onclick="search()">SEARCH</button></div>
+<div class=yellow style="padding:7px;margin:10px">⭐ Try searching for something weird!</div>
+</div>
+<h3>POPULAR</h3>
+<div class=grid>
+${["pic","tube","game","weather","news","forum","music","anime","pets"].map(x=>`<div class=card><h3>${L(x)}</h3><p>Visit this totally real website!</p></div>`).join("")}
+</div>
+<p class=small>*Not actually the whole web.</p>`)
+}
+const routes={search:home};
+
+function search(){
+let q=document.getElementById("q").value.trim(),x=q.toLowerCase();
+if(!q)return;
+let r=[];
+const add=(s,t,d)=>r.push(`<div class=box><h3>${L(s,t)}</h3><p>${d}</p></div>`);
+if(/cult|sect|relig|ritual|group/.test(x)){
+add("cult","CultWatch","Independent research about controlling groups.");
+add("archive","Cult Archive","Historical documents and reports.");
+add("ex","ExMembers","Stories from people who left groups.");
+add("cnews","CultNews","Investigations into modern groups.");
+}
+if(/eye|elys|open|garden/.test(x)){
+add("garden","GardenTalk","Old gardening discussions contain something strange.");
+add("open","The Open Eye","A private spiritual community.");
+add("mirror","Mirror House","A mysterious personal website.");
+}
+if(/lantern/.test(x))add("lantern","Lantern Society","An old group nobody can agree existed.");
+if(/hollow/.test(x))add("hollow","Hollow Creek Research","A historical religious movement.");
+if(/veyra/.test(x))add("veyra","Veyra Circle","A 1980s organization.");
+if(/star|stars/.test(x))add("stars","Children of the Star","A mysterious group from the 1970s.");
+if(!r.length)r=[`<div class=box><h3>No results</h3><p>Try another search.</p></div>`];
+layout("Search Results",`<p>Results for <b>${esc(q)}</b></p>${r.join("")}`)
+}
+
+/* NORMAL SITES */
+routes.pic=()=>layout("PicShare",`
+<div class=nav>HOME | ALBUMS | FRIENDS | ${L("search","SEARCH")}</div>
+<div class=marquee>WELCOME TO PICSHARE!!! :D</div>
+<div class=grid>
+<div class=card>🐈<h3>MY CAT!!!</h3>Jamie_2004</div>
+<div class=card>🛹<h3>MY SKATEBOARD</h3>Tyler2004</div>
+<div class=card>🌺<h3>WEIRD FLOWER?</h3>greenThumb89<br>${L("garden","My gardening site")}</div>
+</div>
+<div class=box><b>Popular user:</b> elysium_17<br>Favorite place: gardens</div>`);
+
+routes.tube=()=>layout("TubeBox",`
+<div class=nav>VIDEOS | UPLOAD | MEMBERS</div>
+<div class=grid>
+<div class=card>🐕<h3>Funny Dogs</h3><button>PLAY</button></div>
+<div class=card>🛹<h3>Skate Video</h3><button>PLAY</button></div>
+<div class=card>📼<h3>Urban Legends #3</h3><button>PLAY</button></div>
+</div>`);
+
+routes.game=()=>layout("GameHub 2004",`
+<div class=marquee>★★ GAME OF THE WEEK ★★</div>
+<div class=grid>
+<div class=card><h3>Space Warrior</h3>★★★★☆</div>
+<div class=card><h3>Fishing Mania</h3>★★★☆☆</div>
+<div class=card><h3>Haunted House 2</h3>★★★★★</div>
+</div>`);
+
+routes.weather=()=>layout("WeatherWorld",`
+<div class=center><h2>☀️ 72°F</h2><p>Mostly sunny.</p><button>Springfield</button> <button>Chicago</button></div>`);
+
+routes.buy=()=>layout("BuyBuy",`
+<div class=marquee>BUY STUFF!!!</div>
+<div class=grid>
+<div class=card>Blue MP3 Player<br>$49.99<br><button>BUY</button></div>
+<div class=card>Glow Stars<br>$4.99<br><button>BUY</button></div>
+<div class=card>Psychic Crystal<br>$12.99<br><button>BUY</button></div>
+</div>`);
+
+routes.food=()=>layout("FoodFinder",`
+<div class=grid>
+<div class=card>Mac & Cheese ★★★★★</div>
+<div class=card>Chocolate Cake ★★★★☆</div>
+<div class=card>Grandma's Chili ★★★★★</div>
+</div>`);
+
+routes.news=()=>layout("WorldNews",`
+<div class=nav>BREAKING | LOCAL | WORLD | TECH | STRANGE</div>
+<div class=box><h3>Library opens computer room</h3></div>
+<div class=box><h3>Internet use reaches new high</h3></div>
+<div class=box><h3>${L("cnews","STRANGE: Secret online group investigated")}</h3></div>`);
+
+routes.forum=()=>layout("ForumZone",`
+<div class=nav>GENERAL CHAT</div>
+${[
+"SkaterKid: Anyone else hate Mondays?",
+"CatLady: LOOK AT MY KITTEN!!!",
+"HistoryBuff: Anyone know good cult research sites?",
+"Elysium17: Try CultWatch.",
+"BlueSky: Why does everyone keep talking about the Eye?"
+].map(x=>`<div class=post>${x}</div>`).join("")}`);
+
+routes.music=()=>layout("MP3 Heaven",`
+<div class=marquee>FREE MP3S!!!</div>
+<h2>Top downloads</h2>
+<div class=box>01 - Neon Skies</div>
+<div class=box>02 - Satellite Heart</div>
+<div class=box>03 - Empty Rooms</div>
+<p>Webmaster: <b>elysium_17</b></p>`);
+
+routes.anime=()=>layout("Anime Galaxy",`
+<div class=pink><h2>WELCOME ANIME FANS!!!</h2>
+<p>Fan art • AMVs • character shrines • forums</p></div>
+<div class=grid><div class=card>Robot Zone</div><div class=card>Monster Zone</div><div class=card>Magic Zone</div></div>`);
+
+routes.pets=()=>layout("Pet Palace",`
+<div class=green><h2>🐶 PET PALACE 🐱</h2>
+<p>Pictures of pets from around the world!</p></div>
+<div class=grid><div class=card>🐕 Max</div><div class=card>🐈 Luna</div><div class=card>🐇 Pickles</div></div>`);
+
+routes.quiz=()=>layout("Quiz Palace",`
+<div class=purple><h2>WHAT KIND OF PERSON ARE YOU?</h2>
+<button onclick="modal('QUIZ','You are... probably curious.')">TAKE QUIZ</button></div>`);
+
+routes.guest=()=>layout("Guestbook Central",`
+<h2>Sign my guestbook!!!</h2>
+<div class=post>🌟 Nice site! - Sarah</div>
+<div class=post>LOL I found this through a webring. - Mike</div>
+<div class=post>Anyone know about the Eye? - ???</div>`);
+
+routes.webring=()=>layout("WebRing World",`
+<div class=marquee>JOIN THE WEB RING!!!</div>
+<p>Random websites connected by little blue buttons.</p>
+<ul>
+<li>${L("garden","GardenTalk")}</li>
+<li>${L("anime","Anime Galaxy")}</li>
+<li>${L("music","MP3 Heaven")}</li>
+<li>${L("mirror","Mirror House")}</li>
+</ul>`);
+
+/* CULT RESEARCH */
+routes.cult=()=>layout("CultWatch",`
+<div class=nav>HOME | DATABASE | ${L("archive","ARCHIVE")} | ${L("ex","EX-MEMBERS")}</div>
+<div class=yellow style="padding:10px"><b>INDEPENDENT RESEARCH</b></div>
+<h2>Organizations</h2>
+<div class=grid>
+<div class=card><h3>THE OPEN EYE</h3>${L("open","Research entry")}</div>
+<div class=card><h3>LANTERN SOCIETY</h3>${L("lantern","Research entry")}</div>
+<div class=card><h3>HOLLOW CREEK</h3>${L("hollow","Research entry")}</div>
+<div class=card><h3>VEYRA CIRCLE</h3>${L("veyra","Research entry")}</div>
+<div class=card><h3>CHILDREN OF THE STAR</h3>${L("stars","Research entry")}</div>
+<div class=card><h3>MIRROR HOUSE</h3>${L("mirror","Research entry")}</div>
+</div>`);
+
+routes.archive=()=>layout("The Cult Archive",`
+<div class=nav>DOCUMENTS | TIMELINE | SEARCH</div>
+<div class=box><h3>OPEN EYE — 2001</h3>Online spiritual movement.<br><button onclick="modal('OE-17','A deleted link repeatedly appeared beside the username <b>elysium_17</b>.')">VIEW FILE</button></div>
+<div class=box><h3>LANTERN — 1978</h3>Group disappeared after moving locations.</div>
+<div class=box><h3>HOLLOW CREEK — 1989</h3>Small rural religious community.</div>
+<div class=box><h3>VEYRA — 1984</h3>Short-lived philosophical movement.</div>
+<div class=box><h3>STAR — 1972</h3>Followers believed humanity would eventually "return home."</div>`);
+
+routes.ex=()=>layout("ExMembers",`
+<div class=post><b>quietbird:</b> I joined because I wanted answers. They were kind at first.</div>
+<div class=post><b>former_eye:</b> Do not confuse attention with friendship.</div>
+<div class=post><b>greenroom:</b> They said everyone outside was afraid of the truth.</div>
+<div class=post><b>deleted_user:</b> If you find the garden link, don't use the invitation.</div>
+<div class=post><b>northstar:</b> Every group says it is different.</div>`);
+
+routes.cnews=()=>layout("CultNews",`
+<h2>Online group investigated</h2>
+<p><b>June 18, 2004</b></p>
+<div class=box>The Open Eye is reportedly attracting hundreds of people online.</div>
+<div class=box>Former members describe increasing pressure to remain involved.</div>
+<div class=box>Researchers have discovered references to several older groups.</div>
+<p>${L("cult","Back to CultWatch")}</p>`);
+
+routes.religion=()=>layout("Religion Research",`
+<h2>Comparative Religion Database</h2>
+<p>Historical information about religious movements.</p>
+<p>Search terms:</p>
+${L("hollow","Hollow Creek")} • ${L("veyra","Veyra Circle")} • ${L("stars","Children of the Star")}
+`);
+
+routes.history=()=>layout("HistoryNet",`
+<h2>Forgotten Organizations</h2>
+<p>1970s: Children of the Star</p>
+<p>1978: Lantern Society</p>
+<p>1984: Veyra Circle</p>
+<p>1989: Hollow Creek</p>
+<p>2001: Open Eye</p>
+<p><b>Something connects these dates.</b></p>`);
+
+/* OTHER CULTS */
+routes.lantern=()=>layout("Lantern Society",`
+<div class=purple><h2>THE LANTERN SOCIETY</h2></div>
+<p>Founded in 1978.</p>
+<p>Members believed knowledge should be passed secretly from person to person.</p>
+<div class=box>Last known meeting: October 1983.</div>
+<div class=box>Archive note: A symbol resembling an eye appears in one photograph.</div>
+<p>${L("archive","Check the archive")}</p>`);
+
+routes.hollow=()=>layout("Hollow Creek Research",`
+<div class=green><h2>HOLLOW CREEK</h2></div>
+<p>A rural community active during the late 1980s.</p>
+<p>Former residents describe strict rules and isolation.</p>
+<div class=box>Odd detail: Their records repeatedly mention "the garden."</div>
+<p>${L("garden","GardenTalk")}</p>`);
+
+routes.veyra=()=>layout("Veyra Circle",`
+<div class=blue><h2>VEYRA CIRCLE</h2></div>
+<p>1984–1987.</p>
+<p>Members believed reality could be changed by collective belief.</p>
+<div class=box>One surviving document contains the phrase:<br><b>"An open eye sees what a closed mind cannot."</b></div>`);
+
+routes.stars=()=>layout("Children of the Star",`
+<div class=yellow><h2>CHILDREN OF THE STAR</h2></div>
+<p>Active mostly during the 1970s.</p>
+<p>The group believed people were waiting for a "return."</p>
+<div class=box>Researchers found no direct connection to the Open Eye.</div>
+<div class=box>Except for one repeated symbol: ◉</div>`);
+
+routes.mirror=()=>layout("Mirror House",`
+<div style="background:#111;color:#ddd;padding:25px">
+<h1>MIRROR HOUSE</h1>
+<p>Personal homepage of "M."</p>
+<hr>
+<p>Have you ever wondered why certain ideas seem familiar before you've heard them?</p>
+<p>Look into the mirror.</p>
+<p>Then look behind it.</p>
+<p>${L("open","◉")}</p>
+</div>`);
+
+/* GARDEN */
+routes.garden=()=>layout("GardenTalk",`
+<div class=nav>PLANTS | GARDENING | OFF TOPIC</div>
+<div class=marquee>WELCOME GARDENERS!!! 🌱</div>
+<div class=post><b>greenThumb89:</b> Why does this flower only bloom at night?</div>
+<div class=post><b>Elysium17:</b> Some things open when they're ready.</div>
+<div class=post><b>plantDad:</b> What does that mean lol</div>
+<div class=post><b>Elysium17:</b> If you want to understand, look for the eye.</div>
+<div class=yellow style="padding:10px"><button onclick="modal('IMAGE','<div class=center style=font-size:120px>◉</div><p class=center>OPEN WHEN READY</p>')">view_image_17.jpg</button></div>`);
+
+/* OPEN EYE */
+routes.open=()=>p.joined?cultHome():openJoin();
+
+function openJoin(){
+
+page.innerHTML=`
+<div id=open>
+<div class=oh><div class=eye>◉</div><h1>THE OPEN EYE</h1><p>SEE WHAT OTHERS CANNOT.</p></div>
+<div class=on>${L("cult","ABOUT US")} | ${L("cnews","REPORTS")} | JOIN</div>
+<div class=ob>
+<h2>WELCOME, VISITOR.</h2>
+<p>The world is full of noise. The Open Eye is a community for people who want to look beyond it.</p>
+<div class=box style="background:#161616">
+<h3>REQUEST MEMBERSHIP</h3>
+<input id=name placeholder="username">
+<button onclick="join()">REQUEST INVITATION</button>
+</div>
+</div></div>`;
+
+}
+
+function join(){
+
+let n=document.getElementById("name").value.trim();
+
+if(!n)return modal("Missing username","Choose a username.");
+
+p.name=n;p.joined=true;p.trust=1;p.steps=1;
+
+mail.push({
+from:"THE OPEN EYE",
+subject:"Welcome",
+body:"You have been accepted. Begin by reading the Welcome page."
+});
+
+go("open");
+
+}
+
+function cultHome(){
+
+page.innerHTML=`
+<div id=open>
+<div class=oh><div class=eye>◉</div>
+<h1>THE OPEN EYE</h1>
+<p>WELCOME, ${esc(p.name.toUpperCase())}</p></div>
+<div class=on>
+<a onclick="cultHome()">HOME</a>
+<a onclick="lessons()">LESSONS</a>
+<a onclick="members()">MEMBERS</a>
+<a onclick="messages()">MESSAGES (${mail.length})</a>
+<a onclick="leave()">LEAVE</a>
+</div>
+<div class=ob id=carea></div>
+</div>`;
+
+document.getElementById("carea").innerHTML=`
+<h2>You have begun to see.</h2>
+<p>Welcome back, <b>${esc(p.name)}</b>.</p>
+<p>The Open Eye believes most people live surrounded by noise they never question.</p>
+<div class=box><h3>YOUR FIRST TASK</h3>
+<p>Read the first lesson.</p>
+<button onclick="lessons()">READ LESSON</button></div>
+<p>Membership level: ${p.trust}</p>`;
+}
+
+function lessons(){
+
+let x=`<h2>Lessons</h2>
+<div class=box><h3>LESSON 01 — NOISE</h3>
+<p>Do not assume the loudest voice is the truthful one.</p></div>`;
+
+if(p.trust>=2)x+=`<div class=box><h3>LESSON 02 — DOUBT</h3>
+<p>Question what you were taught. Question who taught it.</p>
+<button onclick="advance()">CONTINUE</button></div>`;
+
+if(p.trust>=3)x+=`<div class=box><h3>LESSON 03 — THE OUTSIDE</h3>
+<p>People outside may tell you that we are dangerous. Ask yourself why they are afraid.</p></div>`;
+
+if(p.trust>=4)x+=`<div class=box><h3>LESSON 04 — BELONGING</h3>
+<p>You are not required to be alone anymore.</p></div>`;
+
+if(p.trust>=5)x+=`<div class=box><h3>LESSON 05 — THE EYE</h3>
+<p>The Eye is not something you worship. It is something you become willing to see.</p>
+<button onclick="believe()">I UNDERSTAND</button></div>`;
+
+document.getElementById("carea").innerHTML=x;
+
+}
+
+function advance(){
+p.trust++;p.steps++;
+mail.push({from:"THE OPEN EYE",subject:"A small question",body:"What would you believe if everyone around you told you not to?"});
+lessons();
+}
+
+function believe(){
+p.trust++;p.belief++;
+mail.push({from:"THE OPEN EYE",subject:"You understand",body:"You are beginning to understand. There is still more to see."});
+cultHome();
+}
+
+function members(){
+
+document.getElementById("carea").innerHTML=`
+<h2>Members</h2>
+<div class=box><b>elysium_17</b><br>Founder</div>
+<div class=box><b>quietbird</b><br>Member since 2002</div>
+<div class=box><b>greenroom</b><br>Member since 2003</div>
+<div class=box><b>${esc(p.name)}</b><br>Member since today</div>`;
+
+}
+
+function messages(){
+
+document.getElementById("carea").innerHTML=
+"<h2>Messages</h2>"+
+mail.map(m=>`<div class=box><b>${esc(m.from)}</b>
